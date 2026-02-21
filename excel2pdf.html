@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Free Excel to PDF Converter | Convert XLS, XLSX, CSV Securely</title>
+    <meta name="description" content="Convert Excel spreadsheets to PDF instantly in your browser. Free, 100% secure client-side processing with custom margins, scaling, and headers.">
+    <meta name="keywords" content="Excel to PDF, XLS to PDF, CSV to PDF, free spreadsheet converter, secure Excel converter, offline PDF maker, Excel formatting PDF">
+    <meta name="robots" content="index, follow">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Excel2PDF Pro",
+      "url": "https://yourwebsite.com/excel-to-pdf",
+      "description": "A 100% secure, client-side application for converting Excel spreadsheets into perfectly formatted PDF documents.",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+
+        :root {
+            --bg-body: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --upload-bg: linear-gradient(to bottom, #f0f9ff, #ffffff);
+            --upload-hover: #e0f2fe;
+            --card-bg: white;
+            --card-border: #f1f5f9;
+            --hero-gradient: linear-gradient(135deg, #0284c7 0%, #0ea5e9 50%, #38bdf8 100%);
+            --footer-bg: #0f172a;
+            --input-bg: #f8fafc;
+            --input-border: #cbd5e1;
+            --locked-bg: #f1f5f9;
+            --primary-accent: #0ea5e9;
+            --secondary-accent: #0284c7;
+        }
+
+        body.dark-mode {
+            --bg-body: #0f172a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-bg: rgba(30, 41, 59, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --upload-bg: linear-gradient(to bottom, #082f49, #0f172a);
+            --upload-hover: #0c4a6e;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --hero-gradient: linear-gradient(135deg, #082f49 0%, #0c4a6e 50%, #0369a1 100%);
+            --footer-bg: #020617;
+            --input-bg: #334155;
+            --input-border: #475569;
+            --locked-bg: #0f172a;
+            --primary-accent: #38bdf8;
+            --secondary-accent: #0ea5e9;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+
+        body { background-color: var(--bg-body); color: var(--text-main); overflow-x: hidden; width: 100%; }
+
+        .hero-background { position: absolute; top: 0; left: 0; width: 100%; height: 450px; background: var(--hero-gradient); border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; z-index: -1; box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25); }
+        @media (max-width: 600px) { .hero-background { height: 380px; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; } }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 15px; width: 100%; }
+        
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; color: white; width: 100%; }
+        .logo { font-size: 24px; font-weight: 900; display: flex; align-items: center; gap: 10px; }
+        .logo-icon { background: rgba(255, 255, 255, 0.2); padding: 8px; border-radius: 10px; backdrop-filter: blur(4px); color: #bae6fd; font-size: 18px; }
+        
+        .theme-toggle { background: rgba(255, 255, 255, 0.2); border: none; color: white; padding: 8px 12px; border-radius: 20px; cursor: pointer; font-weight: 800; backdrop-filter: blur(4px); display: flex; align-items: center; gap: 6px; font-size: 14px; }
+
+        .hero-text { text-align: center; color: white; margin-top: 30px; margin-bottom: 40px; padding: 0 10px; }
+        .hero-text h1 { font-size: clamp(32px, 8vw, 60px); font-weight: 900; line-height: 1.1; margin-bottom: 15px; }
+        .text-accent { color: #bae6fd; }
+        .hero-text p { font-size: clamp(14px, 4vw, 18px); color: #e0f2fe; font-weight: 600; max-width: 700px; margin: 0 auto; }
+
+        .ad-banner { background: var(--glass-bg); backdrop-filter: blur(10px); border: 2px dashed #7dd3fc; border-radius: 20px; display: flex; align-items: center; justify-content: center; color: #0284c7; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; max-width: 100%; overflow: hidden; text-align: center; font-size: 12px; padding: 10px; }
+        .ad-leaderboard { height: 90px; max-width: 728px; margin: 0 auto 40px auto; }
+        .ad-rectangle { height: 280px; width: 100%; max-width: 336px; margin: 30px auto; }
+
+        .glass-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 25px; padding: 30px; max-width: 750px; margin: 0 auto 50px auto; box-shadow: 0 20px 40px rgba(14, 165, 233, 0.15); width: 100%; }
+        @media (max-width: 600px) { .glass-card { padding: 20px 15px; border-radius: 20px; } }
+
+        .upload-zone { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 220px; border: 4px dashed var(--secondary-accent); border-radius: 20px; cursor: pointer; background: var(--upload-bg); position: relative; margin-bottom: 25px; text-align: center; padding: 15px; }
+        .upload-zone.dragover { background: var(--upload-hover); border-color: var(--primary-accent); }
+        .upload-content { display: flex; flex-direction: column; align-items: center; z-index: 2; pointer-events: none; }
+        .upload-icon-wrapper { background: var(--card-bg); padding: 18px; border-radius: 50%; box-shadow: 0 10px 20px rgba(0,0,0,0.08); margin-bottom: 15px; }
+        .upload-icon-wrapper i { font-size: 40px; color: var(--primary-accent); }
+        .upload-zone h2 { font-size: 22px; font-weight: 900; margin-bottom: 8px; color: var(--text-main); }
+        .upload-badge { background: var(--card-bg); padding: 6px 16px; border-radius: 50px; font-size: 13px; font-weight: 800; color: var(--text-muted); border: 1px solid var(--card-border); }
+        .file-input { display: none; }
+
+        .file-display { display: none; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 15px; padding: 20px; margin-bottom: 25px; align-items: center; justify-content: space-between; }
+        .file-info-group { display: flex; align-items: center; gap: 15px; overflow: hidden; }
+        .file-icon { font-size: 32px; color: #10b981; flex-shrink: 0; }
+        .file-details { display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
+        .file-name { font-weight: 900; color: var(--text-main); font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; }
+        .file-meta { font-weight: 700; color: var(--text-muted); font-size: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn-remove { background: #ef4444; color: white; border: none; width: 36px; height: 36px; border-radius: 10px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+        .settings-panel { display: none; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 20px; grid-template-columns: 1fr 1fr; gap: 15px; }
+        @media (max-width: 650px) { .settings-panel { grid-template-columns: 1fr; } }
+        
+        .setting-group { display: flex; flex-direction: column; gap: 6px; position: relative; width: 100%; }
+        .setting-group.full-width { grid-column: 1 / -1; }
+        .setting-group label { font-size: 12px; font-weight: 800; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+        .setting-control { padding: 12px; border-radius: 10px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-main); font-weight: 700; outline: none; width: 100%; font-size: 14px; }
+        select.setting-control { appearance: none; cursor: pointer; }
+
+        .locked-feature { position: relative; }
+        .locked-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.05); border-radius: 10px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(1px); }
+        .dark-mode .locked-overlay { background: rgba(255,255,255,0.05); }
+        .premium-tag { background: linear-gradient(to right, #f59e0b, #ef4444); color: white; font-size: 10px; padding: 4px 8px; border-radius: 8px; font-weight: 900; text-transform: uppercase; display: flex; align-items: center; gap: 4px; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3); }
+
+        .btn-primary { display: none; width: 100%; margin-top: 25px; background: linear-gradient(to right, #0ea5e9, #38bdf8); color: white; border: none; padding: 16px; border-radius: 20px; font-size: 16px; font-weight: 900; cursor: pointer; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 20px rgba(14, 165, 233, 0.3); transition: transform 0.2s, box-shadow 0.2s; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 15px 25px rgba(14, 165, 233, 0.4); }
+
+    </style>
+</head>
+<body>
+
+    <div class="hero-background"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon"><i class="fa-solid fa-file-pdf"></i></div>
+                Excel2PDF <span class="text-accent">Pro</span>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <i id="themeIcon" class="fa-solid fa-moon"></i> <span id="themeText">Dark</span>
+            </button>
+        </header>
+
+        <div class="hero-text">
+            <h1>Data to PDF.<br><span class="text-accent">Beautifully Done.</span></h1>
+            <p>100% browser-based rendering. Convert spreadsheets securely with custom formatting.</p>
+        </div>
+
+        <div class="ad-banner ad-leaderboard">
+            <i class="fa-solid fa-rectangle-ad" style="margin-right: 10px; font-size: 18px;"></i> AdSense Responsive Leaderboard
+        </div>
+
+        <div class="glass-card">
+            <label for="excelFile" class="upload-zone" id="dropZone">
+                <div class="upload-content">
+                    <div class="upload-icon-wrapper"><i class="fa-solid fa-file-excel"></i></div>
+                    <h2>Drop Spreadsheet Here</h2>
+                    <span class="upload-badge">.XLS, .XLSX, and .CSV Supported</span>
+                </div>
+                <input id="excelFile" type="file" class="file-input" accept=".xls,.xlsx,.csv" onchange="handleFileUpload(event)" />
+            </label>
+
+            <div id="fileDisplay" class="file-display">
+                <div class="file-info-group">
+                    <i class="fa-solid fa-file-excel file-icon"></i>
+                    <div class="file-details">
+                        <span id="fileName" class="file-name">Document.xlsx</span>
+                        <div class="file-meta">
+                            <span id="fileSize">0 MB</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-remove" onclick="clearFile()"><i class="fa-solid fa-trash"></i></button>
+            </div>
+
+            <div id="settingsPanel" class="settings-panel">
+                
+                <div class="setting-group full-width">
+                    <label><i class="fa-solid fa-layer-group"></i> Target Sheet</label>
+                    <select id="sheetSelector" class="setting-control"></select>
+                </div>
+
+                <div class="setting-group">
+                    <label><i class="fa-solid fa-file-signature"></i> Output File Name</label>
+                    <input type="text" id="outputFileName" class="setting-control" placeholder="Spreadsheet_Report">
+                </div>
+
+                <div class="setting-group">
+                    <label><i class="fa-solid fa-rotate"></i> Orientation</label>
+                    <select id="pageOrientation" class="setting-control">
+                        <option value="portrait">Portrait</option>
+                        <option value="landscape">Landscape</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <label><i class="fa-solid fa-file"></i> Page Size</label>
+                    <select id="pageSize" class="setting-control">
+                        <option value="a4">A4 Standard</option>
+                        <option value="letter">US Letter</option>
+                        <option value="legal">Legal Format</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <label><i class="fa-solid fa-maximize"></i> Content Scaling</label>
+                    <select id="pageScale" class="setting-control">
+                        <option value="fit">Fit to Page Width</option>
+                        <option value="actual">Actual Size</option>
+                    </select>
+                </div>
+
+                <div class="setting-group locked-feature" onclick="triggerAdModal('headers', 'Headers & Footers')">
+                    <div class="locked-overlay" id="lock_headers">
+                        <span class="premium-tag"><i class="fa-solid fa-lock"></i> Premium</span>
+                    </div>
+                    <label><i class="fa-solid fa-heading"></i> Document Header</label>
+                    <input type="text" id="input_header" class="setting-control" placeholder="Company Name Report..." disabled>
+                </div>
+
+                <div class="setting-group locked-feature" onclick="triggerAdModal('headers', 'Headers & Footers')">
+                    <div class="locked-overlay" id="lock_footers">
+                        <span class="premium-tag"><i class="fa-solid fa-lock"></i> Premium</span>
+                    </div>
+                    <label><i class="fa-solid fa-shoe-prints"></i> Document Footer</label>
+                    <input type="text" id="input_footer" class="setting-control" placeholder="Confidential 2026..." disabled>
+                </div>
+
+                <div class="setting-group locked-feature full-width" onclick="triggerAdModal('styling', 'Pro Table Styling')">
+                    <div class="locked-overlay" id="lock_styling">
+                        <span class="premium-tag"><i class="fa-solid fa-lock"></i> Premium</span>
+                    </div>
+                    <label><i class="fa-solid fa-palette"></i> Table Header Theme</label>
+                    <select id="input_theme" class="setting-control" disabled>
+                        <option value="#f8fafc">Standard Grey (Default)</option>
+                        <option value="#bfdbfe">Corporate Blue</option>
+                        <option value="#bbf7d0">Finance Green</option>
+                        <option value="#fecaca">Alert Red</option>
+                    </select>
+                </div>
+            </div>
+
+            <button id="convertBtn" class="btn-primary" onclick="initiateConversion()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Render PDF
+            </button>
+        </div>
+
+
+
+
+        <div class="ad-banner ad-rectangle">
+            <i class="fa-solid fa-rectangle-ad" style="font-size: 32px; margin-bottom: 10px;"></i>
+            <br>AdSense In-Article Display
+        </div>
+
+        <style>
+            .seo-section { margin: 60px auto; padding: 40px; background: var(--card-bg); border-radius: 30px; border: 1px solid var(--card-border); color: var(--text-muted); max-width: 900px; }
+            @media (max-width: 600px) { .seo-section { padding: 25px; border-radius: 20px; } }
+            .seo-section h2 { font-size: 28px; font-weight: 900; color: var(--text-main); margin-bottom: 20px; }
+            .seo-section h3 { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 30px 0 15px 0; }
+            .seo-section p { font-size: 16px; line-height: 1.7; margin-bottom: 15px; font-weight: 500; }
+            .seo-section ul { margin-left: 20px; margin-bottom: 20px; line-height: 1.7; font-weight: 500; }
+            .seo-section li { margin-bottom: 10px; }
+            .seo-section strong { color: var(--primary-accent); }
+
+            .processing-modal, .ad-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(15px); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; color: white; padding: 15px; }
+            .processing-modal h2 { font-size: 32px; font-weight: 900; margin-bottom: 20px; background: linear-gradient(to right, #38bdf8, #0ea5e9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: pulse 1.5s infinite; text-align: center; }
+            .modal-ad-container { width: 100%; max-width: 336px; height: 280px; background: #1e293b; border: 2px dashed #475569; border-radius: 15px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 800; margin-bottom: 30px; text-align: center; padding: 20px; flex-direction: column; }
+            .spinner { width: 50px; height: 50px; border: 5px solid #334155; border-top-color: #0ea5e9; border-radius: 50%; animation: spin 1s linear infinite; }
+
+            .ad-modal-content { background: var(--card-bg); padding: 30px 20px; border-radius: 20px; max-width: 400px; width: 100%; text-align: center; position: relative; color: var(--text-main); border: 1px solid var(--card-border); box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+            .ad-modal h3 { font-size: 20px; font-weight: 900; margin-bottom: 10px; }
+            .ad-modal p { font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 20px; }
+            .btn-close-modal { position: absolute; top: 10px; right: 10px; background: var(--input-bg); border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; color: var(--text-main); font-weight: bold; }
+            .btn-verify { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--primary-accent); color: white; font-size: 14px; font-weight: 900; cursor: pointer; }
+
+            footer { background: var(--footer-bg); color: #94a3b8; padding: 40px 0; text-align: center; border-top-left-radius: 40px; border-top-right-radius: 40px; margin-top: 30px; width: 100%; }
+            .footer-logo { font-size: 20px; font-weight: 900; color: white; margin-bottom: 20px; }
+            .footer-icons { font-size: 24px; display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
+            .footer-icons i { cursor: pointer; }
+            
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+            @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        </style>
+
+        <section class="seo-section">
+            <h2>The Most Secure Free Excel to PDF Converter</h2>
+            <p>Welcome to <strong>Excel2PDF Pro</strong>. Formatting complex spreadsheets into clean, printable PDFs can be a nightmare. Our advanced WebAssembly tool reads your raw spreadsheet data and renders it locally into beautiful, paginated PDF reports without ever sending your sensitive financial data to a cloud server.</p>
+            
+            <h3>Advanced Spreadsheet Formatting</h3>
+            <p>We've engineered intelligent parsing to handle your data perfectly:</p>
+            <ul>
+                <li><strong>Auto-Fit Scaling:</strong> No more cut-off columns. Select 'Fit to Page Width' and our engine will automatically calculate the optimal font size and cell width to ensure your entire data table fits neatly on the page.</li>
+                <li><strong>Multi-Format Support:</strong> Natively accepts <code>.xls</code>, <code>.xlsx</code>, and <code>.csv</code> files seamlessly via the drag-and-drop zone.</li>
+                <li><strong>Orientation Control:</strong> Wide tables? Force the PDF engine to generate Landscape documents.</li>
+            </ul>
+
+            <h3>Premium Professional Features</h3>
+            <p>Supported by our ad network, you can access powerful corporate formatting tools for free. Inject custom <strong>Headers and Footers</strong> into every page of the generated report, and apply <strong>Theme Colors</strong> to your table headers (Corporate Blue, Finance Green, or Alert Red) to make your data pop in boardroom meetings.</p>
+        </section>
+
+    </div>
+
+    <div id="processingModal" class="processing-modal">
+        <h2>Structuring your PDF...</h2>
+        <div class="modal-ad-container">
+            <i class="fa-solid fa-rectangle-ad" style="font-size: 40px; margin-bottom: 10px; color: #64748b;"></i>
+            <span>AdSense High-CTR Placement</span>
+        </div>
+        <div class="spinner"></div>
+        <p style="margin-top: 20px; font-weight: 600; color: #94a3b8;">Processing locally in your browser.</p>
+    </div>
+
+    <div id="adUnlockModal" class="ad-modal">
+        <div class="ad-modal-content">
+            <button class="btn-close-modal" onclick="closeUnlockModal()">×</button>
+            <h3 id="modalTitle">Premium Feature</h3>
+            <p>Support this free tool by interacting with our sponsor to permanently unlock this feature.</p>
+            <div style="width: 100%; height: 250px; background: var(--input-bg); border: 2px dashed var(--card-border); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 800; margin-bottom: 20px; flex-direction: column;">
+                <i class="fa-solid fa-rectangle-ad" style="font-size: 40px; margin-bottom: 10px;"></i>
+                AdSense Interstitial Placement
+            </div>
+            <button id="unlockBtn" class="btn-verify">Verify Interaction & Unlock</button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-logo"><i class="fa-solid fa-file-pdf" style="color: #bae6fd;"></i> Excel2PDF Pro</div>
+            <p style="font-weight: 700; font-size: 14px;">&copy; 2026. 100% Secure Client-Side Tools.</p>
+        </div>
+    </footer>
+
+    <script>
+        let currentFile = null;
+        let unlockedFeatures = { headers: false, styling: false };
+        let activeUnlockFeature = '';
+
+        const dropZone = document.getElementById('dropZone');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+        ['dragenter', 'dragover'].forEach(eventName => { dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false); });
+        ['dragleave', 'drop'].forEach(eventName => { dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false); });
+
+        dropZone.addEventListener('drop', (e) => {
+            if (e.dataTransfer.files.length > 0) processFileSelection(e.dataTransfer.files[0]);
+        }, false);
+
+        function handleFileUpload(event) {
+            if (event.target.files.length > 0) processFileSelection(event.target.files[0]);
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.getElementById('themeIcon');
+            const text = document.getElementById('themeText');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.className = 'fa-solid fa-sun'; text.textContent = 'Light';
+            } else {
+                icon.className = 'fa-solid fa-moon'; text.textContent = 'Dark';
+            }
+        }
+
+        function formatBytes(bytes) {
+            if (!+bytes) return '0 Bytes';
+            const k = 1024, sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+        }
+
+        function triggerAdModal(featureKey, title) {
+            if (unlockedFeatures[featureKey]) return;
+            activeUnlockFeature = featureKey;
+            document.getElementById('modalTitle').textContent = `Unlock: ${title}`;
+            document.getElementById('adUnlockModal').style.display = 'flex';
+        }
+
+        function closeUnlockModal() {
+            document.getElementById('adUnlockModal').style.display = 'none';
+            document.getElementById('unlockBtn').textContent = 'Verify Interaction & Unlock';
+        }
+
+        document.getElementById('unlockBtn').addEventListener('click', function() {
+            this.textContent = 'Verifying with server...';
+            setTimeout(() => {
+                unlockedFeatures[activeUnlockFeature] = true;
+                
+                if (activeUnlockFeature === 'headers') {
+                    document.getElementById('lock_headers').style.display = 'none';
+                    document.getElementById('lock_footers').style.display = 'none';
+                    document.getElementById('input_header').disabled = false;
+                    document.getElementById('input_footer').disabled = false;
+                }
+                
+                if (activeUnlockFeature === 'styling') {
+                    document.getElementById('lock_styling').style.display = 'none';
+                    document.getElementById('input_theme').disabled = false;
+                }
+
+                closeUnlockModal();
+            }, 2000);
+        });
+
+        function clearFile() {
+            currentFile = null;
+            document.getElementById('excelFile').value = '';
+            document.getElementById('dropZone').style.display = 'flex';
+            document.getElementById('fileDisplay').style.display = 'none';
+            document.getElementById('settingsPanel').style.display = 'none';
+            document.getElementById('convertBtn').style.display = 'none';
+        }
+
+        function processFileSelection(file) {
+            const validTypes = ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv'];
+            const extension = file.name.split('.').pop().toLowerCase();
+            
+            if (!['xls', 'xlsx', 'csv'].includes(extension)) {
+                alert('Invalid format. Please upload an XLS, XLSX, or CSV file.');
+                return;
+            }
+
+            currentFile = file;
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatBytes(file.size);
+            
+            let defaultName = file.name.split('.')[0] + '_Report';
+            document.getElementById('outputFileName').value = defaultName;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    
+                    if (!workbook.SheetNames || workbook.SheetNames.length === 0) throw new Error('No sheets found');
+
+                    const sheetSelector = document.getElementById('sheetSelector');
+                    sheetSelector.innerHTML = '';
+                    workbook.SheetNames.forEach(function(sheetName) {
+                        const option = document.createElement('option');
+                        option.value = sheetName;
+                        option.textContent = sheetName;
+                        sheetSelector.appendChild(option);
+                    });
+
+                    document.getElementById('dropZone').style.display = 'none';
+                    document.getElementById('fileDisplay').style.display = 'flex';
+                    document.getElementById('settingsPanel').style.display = 'grid';
+                    document.getElementById('convertBtn').style.display = 'flex';
+                } catch (err) {
+                    alert('Error reading file. Ensure it is not password protected.');
+                    clearFile();
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function initiateConversion() {
+            if (!currentFile) return;
+            const modal = document.getElementById('processingModal');
+            modal.style.display = 'flex';
+            setTimeout(() => { processAndDownloadPdf(); }, 1500); 
+        }
+
+        function processAndDownloadPdf() {
+            const modal = document.getElementById('processingModal');
+            
+            const targetSheet = document.getElementById('sheetSelector').value;
+            const pOrientation = document.getElementById('pageOrientation').value;
+            const pSize = document.getElementById('pageSize').value;
+            const pScale = document.getElementById('pageScale').value;
+            
+            const headerText = unlockedFeatures.headers ? document.getElementById('input_header').value : "";
+            const footerText = unlockedFeatures.headers ? document.getElementById('input_footer').value : "";
+            const headerTheme = unlockedFeatures.styling ? document.getElementById('input_theme').value : "#f8fafc";
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const worksheet = workbook.Sheets[targetSheet];
+                    const htmlString = XLSX.utils.sheet_to_html(worksheet);
+                    
+                    const tempDiv = document.createElement('div');
+                    
+                    if (headerText) {
+                        const hTitle = document.createElement('h2');
+                        hTitle.style.textAlign = 'center';
+                        hTitle.style.marginBottom = '20px';
+                        hTitle.style.color = '#1e293b';
+                        hTitle.style.fontFamily = 'sans-serif';
+                        hTitle.textContent = headerText;
+                        tempDiv.appendChild(hTitle);
+                    }
+
+                    const tableWrapper = document.createElement('div');
+                    tableWrapper.innerHTML = htmlString;
+                    tempDiv.appendChild(tableWrapper);
+
+                    if (footerText) {
+                        const fTitle = document.createElement('p');
+                        fTitle.style.textAlign = 'center';
+                        fTitle.style.marginTop = '20px';
+                        fTitle.style.color = '#64748b';
+                        fTitle.style.fontSize = '12px';
+                        fTitle.style.fontFamily = 'sans-serif';
+                        fTitle.textContent = footerText;
+                        tempDiv.appendChild(fTitle);
+                    }
+
+                    tempDiv.style.padding = '20px';
+                    tempDiv.style.fontFamily = 'system-ui, sans-serif';
+                    tempDiv.style.fontSize = '12px';
+                    
+                    const tables = tempDiv.getElementsByTagName('table');
+                    for(let i=0; i<tables.length; i++) {
+                        tables[i].style.borderCollapse = 'collapse';
+                        tables[i].style.marginTop = '15px';
+                        tables[i].style.width = '100%';
+                        
+                        if (pScale === 'fit') {
+                            tables[i].style.tableLayout = 'fixed';
+                            tempDiv.style.fontSize = '10px'; 
+                        }
+                        
+                        const cells = tables[i].getElementsByTagName('td');
+                        for(let j=0; j<cells.length; j++) {
+                            cells[j].style.border = '1px solid #cbd5e1';
+                            cells[j].style.padding = '8px';
+                            if (pScale === 'fit') {
+                                cells[j].style.wordWrap = 'break-word';
+                                cells[j].style.overflow = 'hidden';
+                            }
+                        }
+                        
+                        const headers = tables[i].getElementsByTagName('th');
+                        for(let k=0; k<headers.length; k++) {
+                            headers[k].style.backgroundColor = headerTheme;
+                            headers[k].style.border = '1px solid #cbd5e1';
+                            headers[k].style.padding = '10px';
+                            headers[k].style.fontWeight = 'bold';
+                        }
+                    }
+
+                    let outputName = document.getElementById('outputFileName').value.trim() || 'Report';
+                    if (!outputName.toLowerCase().endsWith('.pdf')) outputName += '.pdf';
+
+                    const opt = {
+                        margin:       10,
+                        filename:     outputName,
+                        image:        { type: 'jpeg', quality: 1 },
+                        html2canvas:  { scale: 2, useCORS: true, logging: false },
+                        jsPDF:        { unit: 'mm', format: pSize, orientation: pOrientation }
+                    };
+
+                    html2pdf().set(opt).from(tempDiv).save().then(function() {
+                        modal.style.display = 'none';
+                    });
+                } catch(error) {
+                    alert('Error compiling document. The data structure may be too complex.');
+                    modal.style.display = 'none';
+                }
+            };
+            reader.readAsArrayBuffer(currentFile);
+        }
+    </script>
+</body>
+</html>

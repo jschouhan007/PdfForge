@@ -1,0 +1,659 @@
+      <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Free PDF Merger | Combine & Format PDF Files Securely Online</title>
+    <meta name="description" content="Merge multiple PDF files into one instantly in your browser. Format page sizes, adjust orientation, add watermarks, and edit metadata with zero server uploads.">
+    <meta name="keywords" content="merge PDF, combine PDF files, resize PDF pages, PDF orientation, secure PDF merger, free PDF combiner, offline PDF merge, add watermark to PDF, edit PDF metadata">
+    <meta name="robots" content="index, follow">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "PDFMerge Pro",
+      "url": "https://yourwebsite.com/merge-pdf",
+      "description": "A 100% secure, client-side application for combining, resizing, and modifying multiple PDF documents.",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+
+        :root {
+            --bg-body: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --upload-bg: linear-gradient(to bottom, #fff1f2, #ffffff);
+            --upload-hover: #ffe4e6;
+            --card-bg: white;
+            --card-border: #f1f5f9;
+            --hero-gradient: linear-gradient(135deg, #be123c 0%, #e11d48 50%, #f43f5e 100%);
+            --footer-bg: #0f172a;
+            --input-bg: #f8fafc;
+            --input-border: #cbd5e1;
+            --locked-bg: #f1f5f9;
+            --primary-accent: #e11d48;
+            --secondary-accent: #f43f5e;
+        }
+
+        body.dark-mode {
+            --bg-body: #0f172a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-bg: rgba(30, 41, 59, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --upload-bg: linear-gradient(to bottom, #4c0519, #0f172a);
+            --upload-hover: #881337;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --hero-gradient: linear-gradient(135deg, #4c0519 0%, #881337 50%, #be123c 100%);
+            --footer-bg: #020617;
+            --input-bg: #334155;
+            --input-border: #475569;
+            --locked-bg: #0f172a;
+            --primary-accent: #fb7185;
+            --secondary-accent: #fda4af;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+
+        body { background-color: var(--bg-body); color: var(--text-main); overflow-x: hidden; width: 100%; }
+
+        .hero-background { position: absolute; top: 0; left: 0; width: 100%; height: 450px; background: var(--hero-gradient); border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; z-index: -1; box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25); }
+        @media (max-width: 600px) { .hero-background { height: 380px; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; } }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 15px; width: 100%; }
+        
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; color: white; width: 100%; }
+        .logo { font-size: 24px; font-weight: 900; display: flex; align-items: center; gap: 10px; }
+        .logo-icon { background: rgba(255, 255, 255, 0.2); padding: 8px; border-radius: 10px; backdrop-filter: blur(4px); color: #fda4af; font-size: 18px; }
+        
+        .theme-toggle { background: rgba(255, 255, 255, 0.2); border: none; color: white; padding: 8px 12px; border-radius: 20px; cursor: pointer; font-weight: 800; backdrop-filter: blur(4px); display: flex; align-items: gap: 6px; font-size: 14px; }
+
+        .hero-text { text-align: center; color: white; margin-top: 30px; margin-bottom: 40px; padding: 0 10px; }
+        .hero-text h1 { font-size: clamp(32px, 8vw, 60px); font-weight: 900; line-height: 1.1; margin-bottom: 15px; }
+        .text-accent { color: #fda4af; }
+        .hero-text p { font-size: clamp(14px, 4vw, 18px); color: #ffe4e6; font-weight: 600; max-width: 700px; margin: 0 auto; }
+
+        .ad-banner { background: var(--glass-bg); backdrop-filter: blur(10px); border: 2px dashed #fda4af; border-radius: 20px; display: flex; align-items: center; justify-content: center; color: #be123c; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; max-width: 100%; overflow: hidden; text-align: center; font-size: 12px; padding: 10px; }
+        .ad-leaderboard { height: 90px; max-width: 728px; margin: 0 auto 40px auto; }
+        .ad-rectangle { height: 280px; width: 100%; max-width: 336px; margin: 30px auto; }
+
+        .glass-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 25px; padding: 30px; max-width: 850px; margin: 0 auto 50px auto; box-shadow: 0 20px 40px rgba(225, 29, 72, 0.15); width: 100%; }
+        @media (max-width: 600px) { .glass-card { padding: 20px 15px; border-radius: 20px; } }
+
+        .upload-zone { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 220px; border: 4px dashed var(--secondary-accent); border-radius: 20px; cursor: pointer; background: var(--upload-bg); position: relative; margin-bottom: 25px; text-align: center; padding: 15px; }
+        .upload-zone.dragover { background: var(--upload-hover); border-color: var(--primary-accent); }
+        .upload-content { display: flex; flex-direction: column; align-items: center; z-index: 2; pointer-events: none; }
+        .upload-icon-wrapper { background: var(--card-bg); padding: 18px; border-radius: 50%; box-shadow: 0 10px 20px rgba(0,0,0,0.08); margin-bottom: 15px; }
+        .upload-icon-wrapper i { font-size: 40px; color: var(--primary-accent); }
+        .upload-zone h2 { font-size: 22px; font-weight: 900; margin-bottom: 8px; color: var(--text-main); }
+        .upload-badge { background: var(--card-bg); padding: 6px 16px; border-radius: 50px; font-size: 13px; font-weight: 800; color: var(--text-muted); border: 1px solid var(--card-border); }
+        .file-input { display: none; }
+
+        .file-list-container { display: none; margin-bottom: 25px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 15px; padding: 15px; }
+        .file-list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--card-border); }
+        .file-list-title { font-weight: 900; font-size: 16px; color: var(--text-main); }
+        .file-count-badge { background: var(--primary-accent); color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 800; }
+        
+        .files-wrapper { display: flex; flex-direction: column; gap: 8px; max-height: 350px; overflow-y: auto; padding-right: 5px; }
+        .files-wrapper::-webkit-scrollbar { width: 6px; }
+        .files-wrapper::-webkit-scrollbar-thumb { background: var(--input-border); border-radius: 10px; }
+
+        .file-item { display: flex; align-items: center; justify-content: space-between; background: var(--input-bg); border: 1px solid var(--input-border); padding: 10px 12px; border-radius: 12px; }
+        .file-info { display: flex; align-items: center; gap: 12px; overflow: hidden; }
+        .file-info i { color: var(--secondary-accent); font-size: 20px; flex-shrink: 0; }
+        .file-name-size { display: flex; flex-direction: column; overflow: hidden; }
+        .f-name { font-weight: 800; font-size: 13px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; }
+        .f-size { font-weight: 600; font-size: 11px; color: var(--text-muted); }
+        
+        .file-actions { display: flex; gap: 6px; flex-shrink: 0; }
+        .btn-action { background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-main); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .btn-action:hover { background: var(--input-border); }
+        .btn-remove { color: #ef4444; }
+
+        .settings-panel { display: none; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 20px; margin-top: 20px; grid-template-columns: 1fr 1fr; gap: 15px; }
+        @media (max-width: 650px) { .settings-panel { grid-template-columns: 1fr; } }
+        
+        .setting-group { display: flex; flex-direction: column; gap: 6px; position: relative; width: 100%; }
+        .setting-group.full-width { grid-column: 1 / -1; }
+        .setting-group label { font-size: 12px; font-weight: 800; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+        .setting-control { padding: 12px; border-radius: 10px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-main); font-weight: 700; outline: none; width: 100%; font-size: 14px; }
+        select.setting-control { appearance: none; cursor: pointer; }
+
+        .locked-feature { position: relative; }
+        .locked-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.05); border-radius: 10px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(1px); }
+        .dark-mode .locked-overlay { background: rgba(255,255,255,0.05); }
+        .premium-tag { background: linear-gradient(to right, #f59e0b, #ef4444); color: white; font-size: 10px; padding: 4px 8px; border-radius: 8px; font-weight: 900; text-transform: uppercase; display: flex; align-items: center; gap: 4px; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3); }
+
+        .btn-primary { display: none; width: 100%; margin-top: 25px; background: linear-gradient(to right, #e11d48, #f43f5e, #fb7185); color: white; border: none; padding: 16px; border-radius: 20px; font-size: 16px; font-weight: 900; cursor: pointer; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 10px 20px rgba(225, 29, 72, 0.3); transition: transform 0.2s, box-shadow 0.2s; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 15px 25px rgba(225, 29, 72, 0.4); }
+
+    </style>
+</head>
+<body>
+
+    <div class="hero-background"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon"><i class="fa-solid fa-object-group"></i></div>
+                PDFMerge <span class="text-accent">Pro</span>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <i id="themeIcon" class="fa-solid fa-moon"></i> <span id="themeText">Dark</span>
+            </button>
+        </header>
+
+        <div class="hero-text">
+            <h1>Combine & Format PDFs.<br><span class="text-accent">Instantly. Securely.</span></h1>
+            <p>100% browser-based merging. Format sizes, adjust orientation, and inject metadata securely.</p>
+        </div>
+
+        <div class="ad-banner ad-leaderboard">
+            <i class="fa-solid fa-rectangle-ad" style="margin-right: 10px; font-size: 18px;"></i> AdSense Responsive Leaderboard
+        </div>
+
+        <div class="glass-card">
+            <label for="pdfFiles" class="upload-zone" id="dropZone">
+                <div class="upload-content">
+                    <div class="upload-icon-wrapper"><i class="fa-solid fa-file-pdf"></i></div>
+                    <h2>Add PDF Files</h2>
+                    <span class="upload-badge">Select or drop multiple files</span>
+                </div>
+                <input id="pdfFiles" type="file" class="file-input" accept=".pdf" multiple onchange="handleFileUpload(event)" />
+            </label>
+
+            <div id="fileListContainer" class="file-list-container">
+                <div class="file-list-header">
+                    <div class="file-list-title">Files to Merge</div>
+                    <div class="file-count-badge" id="fileCountBadge">0 Files</div>
+                </div>
+                <div class="files-wrapper" id="filesWrapper"></div>
+            </div>
+
+            <div id="settingsPanel" class="settings-panel">
+                <div class="setting-group full-width">
+                    <label>Output File Name</label>
+                    <input type="text" id="outputFileName" class="setting-control" placeholder="Merged_Document.pdf">
+                </div>
+
+                <div class="setting-group">
+                    <label><i class="fa-solid fa-file"></i> Page Size</label>
+                    <select id="input_pageSize" class="setting-control">
+                        <option value="original">Keep Original Sizes</option>
+                        <option value="a4">Force A4 Format</option>
+                        <option value="letter">Force US Letter</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <label><i class="fa-solid fa-rotate"></i> Page Orientation</label>
+                    <select id="input_orientation" class="setting-control">
+                        <option value="original">Auto (Keep Original)</option>
+                        <option value="portrait">Force Portrait</option>
+                        <option value="landscape">Force Landscape</option>
+                    </select>
+                </div>
+
+                <div class="setting-group locked-feature" onclick="triggerAdModal('metadata', 'Document Metadata & Blank Pages')">
+                    <div class="locked-overlay" id="lock_metadata">
+                        <span class="premium-tag"><i class="fa-solid fa-lock"></i> Premium</span>
+                    </div>
+                    <label><i class="fa-solid fa-file-signature"></i> Document Title</label>
+                    <input type="text" id="input_metaTitle" class="setting-control" placeholder="Internal Name..." disabled>
+                </div>
+
+                <div class="setting-group locked-feature" onclick="triggerAdModal('metadata', 'Document Metadata & Blank Pages')">
+                    <div class="locked-overlay" id="lock_metadata2">
+                        <span class="premium-tag"><i class="fa-solid fa-lock"></i> Premium</span>
+                    </div>
+                    <label><i class="fa-solid fa-user-pen"></i> Document Author</label>
+                    <input type="text" id="input_metaAuthor" class="setting-control" placeholder="Author Name..." disabled>
+                </div>
+
+                <div class="setting-group locked-feature" onclick="triggerAdModal('metadata', 'Document Metadata & Blank Pages')">
+                    <div class="locked-overlay" id="lock_metadata3">
+                        <span class="premium-tag"><i class="fa-solid fa-lock"></i> Premium</span>
+                    </div>
+                    <label><i class="fa-solid fa-file-circle-plus"></i> Blank Separators</label>
+                    <select id="input_blankPages" class="setting-control" disabled>
+                        <option value="none">No blank pages</option>
+                        <option value="single">Insert 1 blank page between files</option>
+                    </select>
+                </div>
+
+                <div class="setting-group locked-feature" onclick="triggerAdModal('watermark', 'Watermarks & Page Numbers')">
+                    <div class="locked-overlay" id="lock_watermark">
+                        <span class="premium-tag"><i class="fa-solid fa-lock"></i> Premium</span>
+                    </div>
+                    <label><i class="fa-solid fa-droplet"></i> Add Watermark</label>
+                    <input type="text" id="input_watermark" class="setting-control" placeholder="CONFIDENTIAL" disabled>
+                </div>
+
+                <div class="setting-group locked-feature" onclick="triggerAdModal('watermark', 'Watermarks & Page Numbers')">
+                    <div class="locked-overlay" id="lock_pageNumbers">
+                        <span class="premium-tag"><i class="fa-solid fa-lock"></i> Premium</span>
+                    </div>
+                    <label><i class="fa-solid fa-list-ol"></i> Page Numbers</label>
+                    <select id="input_pageNumbers" class="setting-control" disabled>
+                        <option value="none">Disabled</option>
+                        <option value="bottomRight">Bottom Right</option>
+                        <option value="bottomCenter">Bottom Center</option>
+                    </select>
+                </div>
+            </div>
+
+            <button id="mergeBtn" class="btn-primary" onclick="initiateMerge()">
+                <i class="fa-solid fa-layer-group"></i> Merge & Format PDFs
+            </button>
+        </div>
+
+      
+      
+      
+      
+      
+      
+        <div class="ad-banner ad-rectangle">
+            <i class="fa-solid fa-rectangle-ad" style="font-size: 32px; margin-bottom: 10px;"></i>
+            <br>AdSense In-Article Display
+        </div>
+        
+        <style>
+            .seo-section { margin: 60px auto; padding: 40px; background: var(--card-bg); border-radius: 30px; border: 1px solid var(--card-border); color: var(--text-muted); max-width: 900px; }
+            @media (max-width: 600px) { .seo-section { padding: 25px; border-radius: 20px; } }
+            .seo-section h2 { font-size: 28px; font-weight: 900; color: var(--text-main); margin-bottom: 20px; }
+            .seo-section h3 { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 30px 0 15px 0; }
+            .seo-section p { font-size: 16px; line-height: 1.7; margin-bottom: 15px; font-weight: 500; }
+            .seo-section ul { margin-left: 20px; margin-bottom: 20px; line-height: 1.7; font-weight: 500; }
+            .seo-section li { margin-bottom: 10px; }
+            .seo-section strong { color: var(--primary-accent); }
+
+            .processing-modal, .ad-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(15px); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; color: white; padding: 15px; }
+            .processing-modal h2 { font-size: 32px; font-weight: 900; margin-bottom: 20px; background: linear-gradient(to right, #fb7185, #f43f5e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: pulse 1.5s infinite; text-align: center; }
+            .modal-ad-container { width: 100%; max-width: 336px; height: 280px; background: #1e293b; border: 2px dashed #475569; border-radius: 15px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 800; margin-bottom: 30px; text-align: center; padding: 20px; flex-direction: column; }
+            .spinner { width: 50px; height: 50px; border: 5px solid #334155; border-top-color: #f43f5e; border-radius: 50%; animation: spin 1s linear infinite; }
+
+            .ad-modal-content { background: var(--card-bg); padding: 30px 20px; border-radius: 20px; max-width: 400px; width: 100%; text-align: center; position: relative; color: var(--text-main); border: 1px solid var(--card-border); box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+            .ad-modal h3 { font-size: 20px; font-weight: 900; margin-bottom: 10px; }
+            .ad-modal p { font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 20px; }
+            .btn-close-modal { position: absolute; top: 10px; right: 10px; background: var(--input-bg); border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; color: var(--text-main); font-weight: bold; }
+            .btn-verify { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--primary-accent); color: white; font-size: 14px; font-weight: 900; cursor: pointer; }
+
+            footer { background: var(--footer-bg); color: #94a3b8; padding: 40px 0; text-align: center; border-top-left-radius: 40px; border-top-right-radius: 40px; margin-top: 30px; width: 100%; }
+            .footer-logo { font-size: 20px; font-weight: 900; color: white; margin-bottom: 20px; }
+            .footer-icons { font-size: 24px; display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
+            .footer-icons i { cursor: pointer; }
+            
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+            @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        </style>
+
+        <section class="seo-section">
+            <h2>The Ultimate Free PDF Combiner & Formatter</h2>
+            <p>Welcome to <strong>PDFMerge Pro</strong>. Whether you need to combine legal contracts, gather monthly invoices into an archive, or stitch together school assignments with standardized page sizes, our tool provides a professional, instant solution directly in your web browser.</p>
+            
+            <h3>Advanced Page Standardization</h3>
+            <p>Combining PDFs from different sources usually results in a messy document with pages of varying shapes and sizes. Our advanced WebAssembly engine solves this by allowing you to <strong>Force Page Sizes (A4 or US Letter)</strong> and <strong>Force Orientation (Portrait or Landscape)</strong>. The system will intelligently scale and embed your original pages into the new standardized formats, ensuring a clean, professional output.</p>
+
+            <h3>Why Choose a Client-Side PDF Merger?</h3>
+            <p>Standard online PDF mergers require you to upload your highly sensitive documents to a remote server. This creates massive data privacy risks. <strong>Our tool is engineered differently.</strong></p>
+            <ul>
+                <li><strong>Total Data Privacy:</strong> Your documents never leave your computer's RAM. We cannot view, store, or access your files.</li>
+                <li><strong>Zero Upload Times:</strong> Because there are no servers involved, merging ten massive 50MB PDF files happens almost instantly.</li>
+            </ul>
+
+            <h3>Premium Publishing Features Included</h3>
+            <p>Supported by our advertising partners, you can unlock advanced document compilation tools completely free of charge. Inject custom <strong>Author and Title Metadata</strong>, automatically add <strong>Blank Separator Pages</strong> for double-sided printing, and apply custom <strong>Confidential Watermarks</strong> directly onto your final document.</p>
+        </section>
+
+    </div>
+
+    <div id="processingModal" class="processing-modal">
+        <h2>Compiling your document...</h2>
+        <div class="modal-ad-container">
+            <i class="fa-solid fa-rectangle-ad" style="font-size: 40px; margin-bottom: 10px; color: #64748b;"></i>
+            <span>AdSense High-CTR Placement</span>
+        </div>
+        <div class="spinner"></div>
+        <p style="margin-top: 20px; font-weight: 600; color: #94a3b8;">Processing locally in your browser.</p>
+    </div>
+
+    <div id="adUnlockModal" class="ad-modal">
+        <div class="ad-modal-content">
+            <button class="btn-close-modal" onclick="closeUnlockModal()">×</button>
+            <h3 id="modalTitle">Premium Feature</h3>
+            <p>Support this free tool by interacting with our sponsor to permanently unlock this feature.</p>
+            <div style="width: 100%; height: 250px; background: var(--input-bg); border: 2px dashed var(--card-border); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 800; margin-bottom: 20px; flex-direction: column;">
+                <i class="fa-solid fa-rectangle-ad" style="font-size: 40px; margin-bottom: 10px;"></i>
+                AdSense Interstitial Placement
+            </div>
+            <button id="unlockBtn" class="btn-verify">Verify Interaction & Unlock</button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-logo"><i class="fa-solid fa-object-group" style="color: #fda4af;"></i> PDFMerge Pro</div>
+            <p style="font-weight: 700; font-size: 14px;">&copy; 2026. 100% Secure Client-Side Tools.</p>
+        </div>
+    </footer>
+
+    <script>
+        let fileList = [];
+        let unlockedFeatures = { watermark: false, metadata: false };
+        let activeUnlockFeature = '';
+
+        const dropZone = document.getElementById('dropZone');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+        ['dragenter', 'dragover'].forEach(eventName => { dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false); });
+        ['dragleave', 'drop'].forEach(eventName => { dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false); });
+
+        dropZone.addEventListener('drop', (e) => {
+            if (e.dataTransfer.files.length > 0) processFiles(e.dataTransfer.files);
+        }, false);
+
+        function handleFileUpload(event) {
+            if (event.target.files.length > 0) processFiles(event.target.files);
+            event.target.value = '';
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.getElementById('themeIcon');
+            const text = document.getElementById('themeText');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.className = 'fa-solid fa-sun'; text.textContent = 'Light';
+            } else {
+                icon.className = 'fa-solid fa-moon'; text.textContent = 'Dark';
+            }
+        }
+
+        function formatBytes(bytes) {
+            if (!+bytes) return '0 Bytes';
+            const k = 1024, sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+        }
+
+        function processFiles(files) {
+            for (let i = 0; i < files.length; i++) {
+                if (files[i].type === 'application/pdf') {
+                    fileList.push({
+                        id: Date.now() + Math.random().toString(36).substr(2, 9),
+                        file: files[i],
+                        name: files[i].name,
+                        size: files[i].size
+                    });
+                }
+            }
+            renderFileList();
+        }
+
+        function renderFileList() {
+            const wrapper = document.getElementById('filesWrapper');
+            wrapper.innerHTML = '';
+            
+            document.getElementById('fileCountBadge').textContent = `${fileList.length} Files`;
+
+            if (fileList.length > 0) {
+                document.getElementById('fileListContainer').style.display = 'block';
+                document.getElementById('settingsPanel').style.display = 'grid';
+                document.getElementById('mergeBtn').style.display = 'flex';
+                document.getElementById('dropZone').style.height = '150px';
+                document.querySelector('.upload-zone h2').style.fontSize = '18px';
+            } else {
+                document.getElementById('fileListContainer').style.display = 'none';
+                document.getElementById('settingsPanel').style.display = 'none';
+                document.getElementById('mergeBtn').style.display = 'none';
+                document.getElementById('dropZone').style.height = '220px';
+                document.querySelector('.upload-zone h2').style.fontSize = '22px';
+            }
+
+            fileList.forEach((item, index) => {
+                const el = document.createElement('div');
+                el.className = 'file-item';
+                el.innerHTML = `
+                    <div class="file-info">
+                        <i class="fa-solid fa-file-pdf"></i>
+                        <div class="file-name-size">
+                            <span class="f-name" title="${item.name}">${item.name}</span>
+                            <span class="f-size">${formatBytes(item.size)}</span>
+                        </div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="btn-action" onclick="moveUp(${index})" ${index === 0 ? 'disabled style="opacity:0.3"' : ''}><i class="fa-solid fa-arrow-up"></i></button>
+                        <button class="btn-action" onclick="moveDown(${index})" ${index === fileList.length - 1 ? 'disabled style="opacity:0.3"' : ''}><i class="fa-solid fa-arrow-down"></i></button>
+                        <button class="btn-action btn-remove" onclick="removeFile('${item.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+                wrapper.appendChild(el);
+            });
+        }
+
+        function moveUp(index) {
+            if (index > 0) {
+                const temp = fileList[index - 1];
+                fileList[index - 1] = fileList[index];
+                fileList[index] = temp;
+                renderFileList();
+            }
+        }
+
+        function moveDown(index) {
+            if (index < fileList.length - 1) {
+                const temp = fileList[index + 1];
+                fileList[index + 1] = fileList[index];
+                fileList[index] = temp;
+                renderFileList();
+            }
+        }
+
+        function removeFile(id) {
+            fileList = fileList.filter(file => file.id !== id);
+            renderFileList();
+        }
+
+        function triggerAdModal(featureKey, title) {
+            if (unlockedFeatures[featureKey]) return;
+            activeUnlockFeature = featureKey;
+            document.getElementById('modalTitle').textContent = `Unlock: ${title}`;
+            document.getElementById('adUnlockModal').style.display = 'flex';
+        }
+
+        function closeUnlockModal() {
+            document.getElementById('adUnlockModal').style.display = 'none';
+            document.getElementById('unlockBtn').textContent = 'Verify Interaction & Unlock';
+        }
+
+        document.getElementById('unlockBtn').addEventListener('click', function() {
+            this.textContent = 'Verifying with server...';
+            setTimeout(() => {
+                unlockedFeatures[activeUnlockFeature] = true;
+                
+                if (activeUnlockFeature === 'watermark') {
+                    document.getElementById('lock_watermark').style.display = 'none';
+                    document.getElementById('lock_pageNumbers').style.display = 'none';
+                    document.getElementById('input_watermark').disabled = false;
+                    document.getElementById('input_pageNumbers').disabled = false;
+                }
+                
+                if (activeUnlockFeature === 'metadata') {
+                    document.getElementById('lock_metadata').style.display = 'none';
+                    document.getElementById('lock_metadata2').style.display = 'none';
+                    document.getElementById('lock_metadata3').style.display = 'none';
+                    document.getElementById('input_metaTitle').disabled = false;
+                    document.getElementById('input_metaAuthor').disabled = false;
+                    document.getElementById('input_blankPages').disabled = false;
+                }
+
+                closeUnlockModal();
+            }, 2000);
+        });
+
+        function initiateMerge() {
+            if (fileList.length < 2) {
+                alert('Please add at least 2 PDF files to merge.');
+                return;
+            }
+            const modal = document.getElementById('processingModal');
+            modal.style.display = 'flex';
+            setTimeout(() => { executePDFMerge(); }, 1000); 
+        }
+
+        async function executePDFMerge() {
+            if (typeof PDFLib === 'undefined') {
+                alert("Core library not loaded. Check internet connection.");
+                document.getElementById('processingModal').style.display = 'none';
+                return;
+            }
+
+            const { PDFDocument, rgb, degrees } = PDFLib;
+            const modal = document.getElementById('processingModal');
+            
+            try {
+                const mergedPdf = await PDFDocument.create();
+                
+                const pSize = document.getElementById('input_pageSize').value;
+                const pOrient = document.getElementById('input_orientation').value;
+                const blankOption = document.getElementById('input_blankPages').value;
+
+                if (unlockedFeatures.metadata) {
+                    const title = document.getElementById('input_metaTitle').value.trim();
+                    const author = document.getElementById('input_metaAuthor').value.trim();
+                    if(title) mergedPdf.setTitle(title);
+                    if(author) mergedPdf.setAuthor(author);
+                    mergedPdf.setCreator('PDFMerge Pro Engine');
+                    mergedPdf.setProducer('PDFMerge Pro Engine');
+                }
+
+                for (let i = 0; i < fileList.length; i++) {
+                    const item = fileList[i];
+                    const arrayBuffer = await item.file.arrayBuffer();
+                    const pdf = await PDFDocument.load(arrayBuffer);
+                    const indices = pdf.getPageIndices();
+
+                    const embeddedPages = await mergedPdf.embedPdf(pdf, indices);
+
+                    for (let j = 0; j < embeddedPages.length; j++) {
+                        const embedded = embeddedPages[j];
+                        const srcDims = embedded.scale(1);
+                        
+                        let targetW = srcDims.width;
+                        let targetH = srcDims.height;
+
+                        if (pSize === 'a4') { targetW = 595.28; targetH = 841.89; }
+                        if (pSize === 'letter') { targetW = 612; targetH = 792; }
+
+                        if (pOrient === 'portrait' && targetW > targetH) {
+                            const temp = targetW; targetW = targetH; targetH = temp;
+                        }
+                        if (pOrient === 'landscape' && targetH > targetW) {
+                            const temp = targetW; targetW = targetH; targetH = temp;
+                        }
+
+                        if (pSize === 'original' && pOrient === 'original') {
+                            const newPage = mergedPdf.addPage([srcDims.width, srcDims.height]);
+                            newPage.drawPage(embedded, { x: 0, y: 0 });
+                        } else {
+                            const newPage = mergedPdf.addPage([targetW, targetH]);
+                            const scaleX = targetW / srcDims.width;
+                            const scaleY = targetH / srcDims.height;
+                            const scale = Math.min(scaleX, scaleY); 
+                            
+                            const drawW = srcDims.width * scale;
+                            const drawH = srcDims.height * scale;
+                            const xPos = (targetW - drawW) / 2;
+                            const yPos = (targetH - drawH) / 2;
+
+                            newPage.drawPage(embedded, {
+                                x: xPos,
+                                y: yPos,
+                                xScale: scale,
+                                yScale: scale
+                            });
+                        }
+                    }
+
+                    if (unlockedFeatures.metadata && blankOption === 'single' && i < fileList.length - 1) {
+                        let blankW = 595.28, blankH = 841.89;
+                        if (pSize === 'letter') { blankW = 612; blankH = 792; }
+                        if (pOrient === 'landscape') { const t = blankW; blankW = blankH; blankH = t; }
+                        mergedPdf.addPage([blankW, blankH]);
+                    }
+                }
+
+                const pages = mergedPdf.getPages();
+                const watermarkText = document.getElementById('input_watermark').value.trim();
+                const pageNumType = document.getElementById('input_pageNumbers').value;
+
+                if (unlockedFeatures.watermark && watermarkText !== '') {
+                    pages.forEach((page) => {
+                        const { width, height } = page.getSize();
+                        page.drawText(watermarkText, {
+                            x: width / 4,
+                            y: height / 2,
+                            size: 50,
+                            color: rgb(0.95, 0.1, 0.1),
+                            opacity: 0.25,
+                            rotate: degrees(45),
+                        });
+                    });
+                }
+
+                if (unlockedFeatures.watermark && pageNumType !== 'none') {
+                    pages.forEach((page, idx) => {
+                        const { width, height } = page.getSize();
+                        const text = `Page ${idx + 1} of ${pages.length}`;
+                        let px = pageNumType === 'bottomRight' ? width - 100 : width / 2 - 40;
+                        page.drawText(text, {
+                            x: px,
+                            y: 30,
+                            size: 11,
+                            color: rgb(0, 0, 0),
+                        });
+                    });
+                }
+
+                const pdfBytes = await mergedPdf.save();
+                let outputName = document.getElementById('outputFileName').value.trim();
+                if (!outputName) outputName = 'Merged_Document.pdf';
+                if (!outputName.toLowerCase().endsWith('.pdf')) outputName += '.pdf';
+
+                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                const link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = outputName;
+                link.click();
+
+                modal.style.display = 'none';
+            } catch (error) {
+                alert('Error processing PDFs. Ensure files are valid and not password protected.');
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
+
